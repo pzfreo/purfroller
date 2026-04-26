@@ -30,7 +30,7 @@ Two 25mm diameter smooth rollers, one fixed (lower) and one adjustable (upper), 
 - Open-ended downward slots at the bottom of each arm to accept the upper axle (axle is retained by the side plate cutout walls once assembled)
 
 ### Rollers
-- **2× rollers** — nylon, 25mm diameter × 3mm wide, smooth surface, 6mm axle bore
+- **2× rollers** — nylon, 25mm diameter × 40mm wide, smooth surface, 6mm axle bore
 
 ### Axles
 - **2× 6mm steel rod** sections
@@ -50,11 +50,11 @@ Two 25mm diameter smooth rollers, one fixed (lower) and one adjustable (upper), 
 | Item | Dimension |
 |------|-----------|
 | Roller diameter | 25mm |
-| Roller width | 3mm |
+| Roller width | 40mm |
 | Axle diameter | 6mm |
 | Side plate thickness | ~8mm |
 | Side plate height | ~85mm |
-| Overall device width | ~40mm |
+| Overall device width | ~56mm (40mm roller + 2× 8mm side plates) |
 | Adjustment travel (slot height) | ~15mm |
 | Required adjustment range | ~1.5mm (1.3–2.5mm purfling) |
 | M6 bolt positions | Directly above U-arms |
