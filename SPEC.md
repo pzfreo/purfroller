@@ -12,22 +12,23 @@ A small roller device to compress laminated wood purfling strips from their as-m
 
 ## Design Overview
 
-Two 25mm diameter smooth rollers, one fixed (lower) and one adjustable (upper), driven by a hand crank. The upper roller is carried in a U-frame that slides vertically inside the main frame. Two M6 adjustment bolts push the U-frame and upper roller down toward the lower roller to set the gap.
+Two 25mm diameter smooth rollers. The upper roller is fixed and driven by a hand crank. The lower roller is carried in an inverted U-frame (crossbar at bottom, arms extending upward, open-topped axle slots) that slides vertically inside the main frame. Two M6 adjustment bolts thread up through the bottom crossbar of the main frame and bear on the underside of the U-frame crossbar, pushing it upward to close the gap. Gravity returns the U-frame when bolts are backed off. The device sits on a short stand to give access to the thumbwheels from below.
 
 ## Parts List
 
-### Main Frame (lower assembly)
+### Main Frame
 - **2× side plates** — nylon, ~8mm thick. Each has:
-  - Lower axle hole near the bottom
-  - Rectangular cutout in the upper portion to guide the U-frame arms
+  - Upper axle hole (fixed) near the top
+  - Rectangular vertical slot in the lower portion to guide the U-frame arms (~3mm taller than arm length)
   - M3 heat set inserts in top and bottom edges for crossbar attachment
-- **Bottom crossbar** — nylon, spans both side plates, retains lower axle. M3 clearance holes each end (1× per end).
-- **Top crossbar** — nylon, spans both side plates. Carries 2× M6 heat set inserts positioned directly above the U-frame arms (not centred). M3 clearance holes each end (2× per end to resist uplift from adjustment force).
+- **Bottom crossbar** — nylon, spans both side plates. Carries 2× M6 heat set inserts for adjustment bolts. M3 clearance holes each end.
+- **Top crossbar** — nylon, spans both side plates, retains upper axle. M3 clearance holes each end.
 
-### U-Frame (upper assembly, single printed piece)
-- Two arms that slide in the side plate cutouts
-- Top crossbar connecting the arms — M6 bolt tips bear on this, directly above each arm
-- Open-ended downward slots at the bottom of each arm to accept the upper axle (axle is retained by the side plate cutout walls once assembled)
+### Inverted U-Frame (lower moving assembly, single printed piece)
+- Crossbar at the bottom (8mm tall) — adjustment bolt tips bear on the underside of this
+- Two arms (7mm × 14mm cross-section, 25mm tall) extending upward that slide in the side plate slots
+- Open-topped axle slots (6.2mm wide × 5mm deep) at the top of each arm to accept the lower axle (axle retained by side plate slot walls once assembled)
+- Inside width between arms: 41mm
 
 ### Rollers
 - **2× rollers** — nylon, 25mm diameter × 40mm wide, smooth surface, 6mm axle bore
@@ -37,12 +38,15 @@ Two 25mm diameter smooth rollers, one fixed (lower) and one adjustable (upper), 
 
 ### Crank
 - Nylon, single piece L-shape (arm + handle)
-- D-bore hub to match a flat filed on the lower axle rod
-- Fitted to the lower axle
+- D-bore hub to match a flat filed on the upper axle rod
+- Fitted to the upper (fixed) axle
+
+### Stand
+- Simple nylon or printed frame, raises device ~20mm off bench to give finger access to thumbwheels from below
 
 ### Hardware
-- 2× M6 threaded rod with brass thumbwheels (glued) — adjustment bolts
-- 2× M6 heat set inserts (in top crossbar)
+- 2× M6 threaded rod with nylon thumbwheels (glued) — adjustment bolts, threaded up through bottom crossbar
+- 2× M6 heat set inserts (in bottom crossbar)
 - M3 heat set inserts and M3 screws throughout for frame assembly
 
 ## Key Dimensions
@@ -53,25 +57,36 @@ Two 25mm diameter smooth rollers, one fixed (lower) and one adjustable (upper), 
 | Roller width | 40mm |
 | Axle diameter | 6mm |
 | Side plate thickness | ~8mm |
-| Side plate height | ~85mm |
 | Overall device width | ~56mm (40mm roller + 2× 8mm side plates) |
-| Adjustment travel (slot height) | ~15mm |
-| Required adjustment range | ~1.5mm (1.3–2.5mm purfling) |
-| M6 bolt positions | Directly above U-arms |
+| Adjustment travel | ~3mm |
+| Required adjustment range | ~1.2mm (1.3–2.5mm purfling) |
+| Stand height | ~20mm (clears thumbwheel thickness + finger access) |
+| M6 bolt positions | Directly below U-frame arms |
+| **U-frame inside width** | **41mm** (40mm roller + 0.5mm clearance each side) |
+| **U-frame arm cross-section** | **7mm × 14mm** (7mm through side plate, 14mm front-to-back) |
+| **U-frame arm height** | **25mm** (1.5× front-to-back width for stable guidance) |
+| **U-frame crossbar height** | **8mm** |
+| **U-frame overall height** | **33mm** (25mm arm + 8mm crossbar) |
+| **Axle slot width** | **6.2mm** (6mm axle + 0.2mm clearance) |
+| **Axle slot depth** | **5mm** |
+| Side plate slot height | TBD — U-frame arm length + 3mm travel |
+| Side plate height | TBD — derive from full vertical stack |
 
 ## Assembly Sequence
 
-1. Drop lower roller and axle into side plate axle slots
-2. Attach bottom crossbar with M3 screws — locks lower axle
-3. Drop upper roller and axle into U-frame arm slots
-4. Slide U-frame down into side plate cutouts — locks upper axle
-5. Attach top crossbar with M3 screws (2× each end)
-6. Install M6 heat set inserts in top crossbar
-7. Thread M6 adjustment rods with thumbwheels through top crossbar
-8. Attach crank to lower axle
+1. Install M6 heat set inserts in bottom crossbar
+2. Thread M6 adjustment rods with thumbwheels up through bottom crossbar
+3. Attach bottom crossbar to side plates with M3 screws
+4. Slide U-frame arms into side plate slots from above
+5. Drop lower roller and axle into U-frame arm slots from above
+6. Attach top crossbar with M3 screws — retains upper axle
+7. Attach crank to upper axle
+8. Place assembled device on stand
 
 ## Notes
 
-- Bolt tips should bear on flat pads on the U-frame crossbar directly above each arm to avoid point loading
+- Bolt tips should bear on flat pads on the U-frame crossbar directly below each arm to avoid point loading
 - Plain bore nylon-on-steel bearing surfaces throughout — no bearings required at this load and speed
+- Upper roller driven; lower roller spun by friction through the workpiece
 - Purfling enters by hand, operator ensures straight entry — no infeed guide needed
+- Several dimensions marked TBD must be derived from the U-frame arm geometry before finalising the side plate design
