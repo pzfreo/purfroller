@@ -12,12 +12,12 @@ axle_dia     = 6.0    # steel axle rod diameter (mm)
 side_plate_t = 8.0    # side plate thickness in Z (along axle)
 
 arm_z_w  = 6.5        # U-frame arm width in Z (fits in 8mm side-plate cutout with clearance)
-arm_x_d  = 12.0       # U-frame arm depth in X (front-to-back)
+arm_x_d  = 14.0       # U-frame arm depth in X (front-to-back) — 3.95mm wall each side of slot
 arm_h    = 50.0       # U-frame arm height in Y
 xbar_h   = 8.0        # U-frame top crossbar height
 xbar_x_d = 10.0       # U-frame top crossbar depth in X
-slot_w   = 6.5        # axle slot width in X (slightly > axle_dia for clearance)
-slot_d   = 12.0       # axle slot depth in Y (open at arm bottom)
+slot_w   = 6.1        # axle slot width in X (0.1mm clearance on 6mm axle)
+slot_d   = 12.0       # axle slot depth in Y (open at arm bottom, U-shaped)
 pad_sz   = 8.0        # M6 bearing-pad footprint (mm)
 pad_h    = 2.0        # M6 bearing-pad height (mm)
 
@@ -64,15 +64,13 @@ l_pad = Box(
     align=(Align.CENTER, Align.MIN, Align.CENTER),
 ).move(Location((0, arm_h + xbar_h, -arm_z)))
 
-# Axle slots — cut upward from the bottom face of each arm, open at Y=0
-r_slot = Box(
-    slot_w, slot_d, arm_z_w + 2,
-    align=(Align.CENTER, Align.MIN, Align.CENTER),
-).move(Location((0, 0,  arm_z)))
+# Axle slots — U-shaped (rectangular lower portion + semicircular cap), open at Y=0
+slot_r = slot_w / 2
+slot_rect = Box(slot_w, slot_d - slot_r, arm_z_w + 2, align=(Align.CENTER, Align.MIN, Align.CENTER))
+slot_cap  = Cylinder(radius=slot_r, height=arm_z_w + 2).move(Location((0, slot_d - slot_r, 0)))
+slot_cutter = slot_rect + slot_cap
 
-l_slot = Box(
-    slot_w, slot_d, arm_z_w + 2,
-    align=(Align.CENTER, Align.MIN, Align.CENTER),
-).move(Location((0, 0, -arm_z)))
+r_slot = slot_cutter.move(Location((0, 0,  arm_z)))
+l_slot = slot_cutter.move(Location((0, 0, -arm_z)))
 
 u_frame = (r_arm + l_arm + xbar + r_pad + l_pad) - r_slot - l_slot
