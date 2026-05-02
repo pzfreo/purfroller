@@ -13,7 +13,7 @@ side_plate_t = 8.0    # side plate thickness in Z (along axle)
 
 arm_z_w  = 6.5        # U-frame arm width in Z (fits in 8mm side-plate cutout with clearance)
 arm_x_d  = 14.0       # U-frame arm depth in X (front-to-back) — 3.95mm wall each side of slot
-arm_h    = 50.0       # U-frame arm height in Y
+arm_h    = 26.5       # U-frame arm height in Y — 5mm clearance above roller top
 xbar_h   = 8.0        # U-frame top crossbar height
 xbar_x_d = 10.0       # U-frame top crossbar depth in X
 slot_w   = 6.1        # axle slot width in X (0.1mm clearance on 6mm axle)
