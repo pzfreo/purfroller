@@ -1,7 +1,6 @@
 """
 Purfling Roller — build123d CAD model
-Parts implemented: roller, u_frame
-See SPEC.md for full design details.
+Parts implemented: roller, axle, u_frame
 """
 from build123d import *
 
@@ -26,13 +25,20 @@ slot_d   = 12.0       # axle slot depth in Z (open at arm top, U-shape with semi
 # Y-centre of each arm: sits mid-way through the side plate, just outside the roller
 arm_y       = roller_len / 2 + side_plate_t / 2   # = 24.0 mm
 arm_y_inner = arm_y - arm_y_w / 2                 # inner face of each arm in Y
+# Axle centre height in global Z — derived from slot geometry
+axle_z      = xbar_h + arm_h - (slot_d - slot_w / 2)  # = 25.55 mm
+# Axle total length: roller span + two side plates + 4 mm stub each side
+axle_len    = roller_len + 2 * side_plate_t + 8        # = 64.0 mm
 
 # ── Roller ──────────────────────────────────────────────────────────────────
 # Cylinder default axis is Z; rotate so axle lies along Y.
 roller = (
     Cylinder(radius=roller_dia / 2, height=roller_len, rotation=(90, 0, 0))
     - Cylinder(radius=axle_dia / 2, height=roller_len + 2, rotation=(90, 0, 0))
-)
+).move(Location((0, 0, axle_z)))
+
+# ── Axle ────────────────────────────────────────────────────────────────────
+axle = Cylinder(radius=axle_dia / 2, height=axle_len, rotation=(90, 0, 0)).move(Location((0, 0, axle_z)))
 
 # ── U-Frame (inverted: crossbar at bottom, arms extending up) ───────────────
 # Axle slot cutter — built in arm-local frame where Z=0 is the arm bottom (joins
