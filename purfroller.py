@@ -1,6 +1,8 @@
 """
 Purfling Roller — build123d CAD model
-Parts implemented: roller, axle, washer (×2), u_frame
+Parts implemented: roller, axle, washer (×2), u_frame,
+                   upper_roller, upper_axle, upper_washer (×2),
+                   sp_r, sp_l (side plates), xbar_top (top crossbar)
 """
 from build123d import *
 
@@ -79,3 +81,51 @@ xbar_end_l  = Box(arm_x_d, arm_y_w, xbar_h, align=(Align.CENTER, Align.CENTER, A
 xbar        = xbar_mid + xbar_end_r + xbar_end_l
 
 u_frame = r_arm + l_arm + xbar
+
+# ── Outer frame parameters ───────────────────────────────────────────────────
+upper_axle_z  = axle_z + 5.0 + roller_dia             # = 54.55 mm (gap=0 at max U-frame push)
+frame_x_d     = 22.0   # side plate width in X (arm slot 14.2 + ~4mm wall each side)
+frame_z_h     = 72.0   # side plate height in Z
+arm_slot_x    = arm_x_d + 0.2                         # = 14.2 mm slot with clearance
+arm_slot_z    = 45.0   # slot height from base (arm top reaches 39.5 mm at max travel)
+xbar_top_h    = 14.0   # top crossbar height in Z, centred on upper_axle_z
+xbar_top_y    = 2 * (arm_y - side_plate_t / 2)        # = 40.0 mm inner-face to inner-face
+
+# ── Upper roller, axle and washers ───────────────────────────────────────────
+upper_roller = (
+    Cylinder(radius=roller_dia / 2, height=roller_len, rotation=(90, 0, 0))
+    - Cylinder(radius=axle_dia / 2, height=roller_len + 2, rotation=(90, 0, 0))
+).move(Location((0, 0, upper_axle_z)))
+
+upper_axle = Cylinder(radius=axle_dia / 2, height=axle_len, rotation=(90, 0, 0)).move(Location((0, 0, upper_axle_z)))
+
+upper_washer_r = (
+    Cylinder(radius=washer_od / 2, height=washer_t, rotation=(90, 0, 0))
+    - Cylinder(radius=axle_dia / 2 + 0.2, height=washer_t + 2, rotation=(90, 0, 0))
+).move(Location((0, +(roller_len / 2 + washer_t / 2), upper_axle_z)))
+upper_washer_l = (
+    Cylinder(radius=washer_od / 2, height=washer_t, rotation=(90, 0, 0))
+    - Cylinder(radius=axle_dia / 2 + 0.2, height=washer_t + 2, rotation=(90, 0, 0))
+).move(Location((0, -(roller_len / 2 + washer_t / 2), upper_axle_z)))
+
+# ── Side plates ──────────────────────────────────────────────────────────────
+# Flat plates (X-Z face) at Y = ±arm_y. Arm guide slot through full Y thickness,
+# open at base. Upper axle hole at Z = upper_axle_z. M3 bolt holes added later.
+sp_r = (
+    Box(frame_x_d, side_plate_t, frame_z_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    - Box(arm_slot_x, side_plate_t + 2, arm_slot_z, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    - Cylinder(radius=(axle_dia + 0.2) / 2, height=side_plate_t + 2, rotation=(90, 0, 0)).move(Location((0, 0, upper_axle_z)))
+).move(Location((0, +arm_y, 0)))
+sp_l = (
+    Box(frame_x_d, side_plate_t, frame_z_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    - Box(arm_slot_x, side_plate_t + 2, arm_slot_z, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    - Cylinder(radius=(axle_dia + 0.2) / 2, height=side_plate_t + 2, rotation=(90, 0, 0)).move(Location((0, 0, upper_axle_z)))
+).move(Location((0, -arm_y, 0)))
+
+# ── Top crossbar ─────────────────────────────────────────────────────────────
+# Spans Y between side plate inner faces. Centred on upper_axle_z in Z.
+# Upper axle bore through full Y length. M3 inserts added later.
+xbar_top = (
+    Box(frame_x_d, xbar_top_y, xbar_top_h, align=(Align.CENTER, Align.CENTER, Align.CENTER))
+    - Cylinder(radius=(axle_dia + 0.2) / 2, height=xbar_top_y + 2, rotation=(90, 0, 0))
+).move(Location((0, 0, upper_axle_z)))
