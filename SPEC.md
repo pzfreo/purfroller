@@ -25,8 +25,8 @@ Two 25mm diameter smooth rollers, one fixed (lower) and one adjustable (upper), 
 - **Top crossbar** — nylon, spans both side plates. Carries 2× M6 heat set inserts positioned directly above the U-frame arms (not centred). M3 clearance holes each end (2× per end to resist uplift from adjustment force).
 
 ### U-Frame (upper assembly, single printed piece)
-- Two arms that slide in the side plate cutouts
-- Top crossbar connecting the arms — M6 bolt tips bear on this, directly above each arm
+- Two arms (14mm × 6.5mm cross-section in X × Y) that slide in the side plate cutouts
+- Top crossbar connecting the arms — stepped profile: 14mm wide (matching arm width) directly above each arm where the M6 bolt tips bear, widening to 25mm in the Y-gap between the arms. The wider middle stays clear of the side plate cutouts.
 - Open-ended downward slots at the bottom of each arm to accept the upper axle (axle is retained by the side plate cutout walls once assembled)
 
 ### Rollers
@@ -45,6 +45,12 @@ Two 25mm diameter smooth rollers, one fixed (lower) and one adjustable (upper), 
 - 2× M6 heat set inserts (in top crossbar)
 - M3 heat set inserts and M3 screws throughout for frame assembly
 
+## Coordinate Convention
+
+- **Z** = vertical (up)
+- **Y** = roller / axle axis (horizontal across)
+- **X** = front-to-back (rolling direction)
+
 ## Key Dimensions
 
 | Item | Dimension |
@@ -55,6 +61,10 @@ Two 25mm diameter smooth rollers, one fixed (lower) and one adjustable (upper), 
 | Side plate thickness | ~8mm |
 | Side plate height | ~85mm |
 | Overall device width | ~56mm (40mm roller + 2× 8mm side plates) |
+| U-frame arm cross-section | 14mm (X) × 6.5mm (Y) |
+| U-frame arm height (Z) | 26.5mm (5mm clearance above roller top) |
+| U-frame crossbar X-depth | 25mm middle / 14mm over arms |
+| U-frame crossbar height (Z) | 8mm |
 | Adjustment travel (slot height) | ~15mm |
 | Required adjustment range | ~1.5mm (1.3–2.5mm purfling) |
 | M6 bolt positions | Directly above U-arms |
