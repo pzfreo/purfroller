@@ -10,6 +10,12 @@ A small roller device to compress laminated wood purfling strips from their as-m
 - All printed parts: nylon (P1S printer)
 - Axles: 6mm steel rod
 
+## Coordinate Convention
+
+- **Z** = vertical (up)
+- **Y** = roller / axle axis (horizontal across)
+- **X** = front-to-back (rolling direction)
+
 ## Design Overview
 
 Two 25mm diameter smooth rollers. The upper roller is fixed and driven by a hand crank. The lower roller is carried in an inverted U-frame (crossbar at bottom, arms extending upward, open-topped axle slots) that slides vertically inside the main frame. Two M6 adjustment bolts thread up through the bottom crossbar of the main frame and bear on the underside of the U-frame crossbar, pushing it upward to close the gap. Gravity returns the U-frame when bolts are backed off. The device sits on a short stand to give access to the thumbwheels from below.
@@ -25,10 +31,10 @@ Two 25mm diameter smooth rollers. The upper roller is fixed and driven by a hand
 - **Top crossbar** — nylon, spans both side plates, retains upper axle. M3 clearance holes each end.
 
 ### Inverted U-Frame (lower moving assembly, single printed piece)
-- Crossbar at the bottom (8mm tall) — adjustment bolt tips bear on the underside of this
-- Two arms (7mm × 14mm cross-section, 25mm tall) extending upward that slide in the side plate slots
-- Open-topped axle slots (6.2mm wide × 5mm deep) at the top of each arm to accept the lower axle (axle retained by side plate slot walls once assembled)
-- Inside width between arms: 41mm
+- Crossbar at the bottom (8mm tall in Z), stepped profile in X: 25mm wide in the Y-gap between the arms, narrowing to 14mm directly under each arm so the arms can slip-fit into the side plate slots. Adjustment bolt tips bear on the underside of the wider middle section.
+- Two arms (14mm × 6.5mm cross-section in X × Y, 26.5mm tall in Z) extending upward that slide in the side plate slots
+- Open-topped U-shaped axle slots (6.1mm wide × 12mm deep, rectangular with semicircular cap) at the top of each arm to accept the lower axle (axle retained by side plate slot walls once assembled)
+- Inside width between arms: 41.5mm
 
 ### Rollers
 - **2× rollers** — nylon, 25mm diameter × 40mm wide, smooth surface, 6mm axle bore
@@ -61,14 +67,15 @@ Two 25mm diameter smooth rollers. The upper roller is fixed and driven by a hand
 | Adjustment travel | ~3mm |
 | Required adjustment range | ~1.2mm (1.3–2.5mm purfling) |
 | Stand height | ~20mm (clears thumbwheel thickness + finger access) |
-| M6 bolt positions | Directly below U-frame arms |
-| **U-frame inside width** | **41mm** (40mm roller + 0.5mm clearance each side) |
-| **U-frame arm cross-section** | **7mm × 14mm** (7mm through side plate, 14mm front-to-back) |
-| **U-frame arm height** | **25mm** (1.5× front-to-back width for stable guidance) |
-| **U-frame crossbar height** | **8mm** |
-| **U-frame overall height** | **33mm** (25mm arm + 8mm crossbar) |
-| **Axle slot width** | **6.2mm** (6mm axle + 0.2mm clearance) |
-| **Axle slot depth** | **5mm** |
+| M6 bolt positions | Inboard of the side plates, bearing on the wider 25mm middle of the U-frame crossbar |
+| **U-frame inside width** | **41.5mm** (40mm roller + 0.75mm clearance each side) |
+| **U-frame arm cross-section** | **14mm × 6.5mm** (X front-to-back × Y through side plate) |
+| **U-frame arm height** | **26.5mm** (5mm clearance between the cradled roller's bottom and the top of the crossbar below it) |
+| **U-frame crossbar height (Z)** | **8mm** |
+| **U-frame crossbar X-depth** | **25mm middle / 14mm over arms** (stepped — see U-frame description) |
+| **U-frame overall height** | **34.5mm** (8mm crossbar + 26.5mm arm) |
+| **Axle slot width (X)** | **6.1mm** (6mm axle + 0.1mm clearance) |
+| **Axle slot depth (Z)** | **12mm** (U-shape: 8.95mm rectangular section + 3.05mm semicircular cap) |
 | Side plate slot height | TBD — U-frame arm length + 3mm travel |
 | Side plate height | TBD — derive from full vertical stack |
 
@@ -85,7 +92,7 @@ Two 25mm diameter smooth rollers. The upper roller is fixed and driven by a hand
 
 ## Notes
 
-- Bolt tips should bear on flat pads on the U-frame crossbar directly below each arm to avoid point loading
+- Bolt tips bear on the wider 25mm middle of the U-frame crossbar (inboard of the side plates), not on the narrow 14mm sections directly under the arms — those need to slip-fit into the side plate slots
 - Plain bore nylon-on-steel bearing surfaces throughout — no bearings required at this load and speed
 - Upper roller driven; lower roller spun by friction through the workpiece
 - Purfling enters by hand, operator ensures straight entry — no infeed guide needed
