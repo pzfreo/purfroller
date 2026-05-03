@@ -85,10 +85,10 @@ u_frame = r_arm + l_arm + xbar
 # ── Outer frame parameters ───────────────────────────────────────────────────
 upper_axle_z  = axle_z + 5.0 + roller_dia             # = 54.55 mm (gap=0 at max U-frame push)
 frame_x_d     = 22.0   # side plate width in X (arm slot 14.2 + ~4mm wall each side)
-frame_z_h     = 72.0   # side plate height in Z
+frame_z_h     = 80.0   # top of frame in Z; plates run from xbar_h to frame_z_h
 arm_slot_x    = arm_x_d + 0.2                         # = 14.2 mm slot with clearance
-arm_slot_z    = 45.0   # slot height from base (arm top reaches 39.5 mm at max travel)
-xbar_top_h    = 14.0   # top crossbar height in Z, centred on upper_axle_z
+arm_slot_z    = 37.0   # slot height from plate base (xbar_h=8mm), reaches Z=45mm absolute
+xbar_top_h    = 12.0   # top crossbar height; sits above upper roller (roller top ~67mm)
 xbar_top_y    = 2 * (arm_y - side_plate_t / 2)        # = 40.0 mm inner-face to inner-face
 
 # ── Upper roller, axle and washers ───────────────────────────────────────────
@@ -109,23 +109,23 @@ upper_washer_l = (
 ).move(Location((0, -(roller_len / 2 + washer_t / 2), upper_axle_z)))
 
 # ── Side plates ──────────────────────────────────────────────────────────────
-# Flat plates (X-Z face) at Y = ±arm_y. Arm guide slot through full Y thickness,
-# open at base. Upper axle hole at Z = upper_axle_z. M3 bolt holes added later.
+# Plates start at Z=xbar_h so the U-frame crossbar hangs below without clashing.
+# Arm guide slot open at plate base. Upper axle hole in plate-local Z coords.
+# M3 bolt holes added later.
+_plate_h   = frame_z_h - xbar_h                               # = 72.0 mm
+_axle_hole_z = upper_axle_z - xbar_h                          # = 46.55 mm in plate-local Z
 sp_r = (
-    Box(frame_x_d, side_plate_t, frame_z_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    Box(frame_x_d, side_plate_t, _plate_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
     - Box(arm_slot_x, side_plate_t + 2, arm_slot_z, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    - Cylinder(radius=(axle_dia + 0.2) / 2, height=side_plate_t + 2, rotation=(90, 0, 0)).move(Location((0, 0, upper_axle_z)))
-).move(Location((0, +arm_y, 0)))
+    - Cylinder(radius=(axle_dia + 0.2) / 2, height=side_plate_t + 2, rotation=(90, 0, 0)).move(Location((0, 0, _axle_hole_z)))
+).move(Location((0, +arm_y, xbar_h)))
 sp_l = (
-    Box(frame_x_d, side_plate_t, frame_z_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    Box(frame_x_d, side_plate_t, _plate_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
     - Box(arm_slot_x, side_plate_t + 2, arm_slot_z, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    - Cylinder(radius=(axle_dia + 0.2) / 2, height=side_plate_t + 2, rotation=(90, 0, 0)).move(Location((0, 0, upper_axle_z)))
-).move(Location((0, -arm_y, 0)))
+    - Cylinder(radius=(axle_dia + 0.2) / 2, height=side_plate_t + 2, rotation=(90, 0, 0)).move(Location((0, 0, _axle_hole_z)))
+).move(Location((0, -arm_y, xbar_h)))
 
 # ── Top crossbar ─────────────────────────────────────────────────────────────
-# Spans Y between side plate inner faces. Centred on upper_axle_z in Z.
-# Upper axle bore through full Y length. M3 inserts added later.
-xbar_top = (
-    Box(frame_x_d, xbar_top_y, xbar_top_h, align=(Align.CENTER, Align.CENTER, Align.CENTER))
-    - Cylinder(radius=(axle_dia + 0.2) / 2, height=xbar_top_y + 2, rotation=(90, 0, 0))
-).move(Location((0, 0, upper_axle_z)))
+# Structural tie between side plates above the upper roller (roller top ~67mm).
+# Upper axle is held by side plate holes alone. M3 inserts added later.
+xbar_top = Box(frame_x_d, xbar_top_y, xbar_top_h, align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, frame_z_h - xbar_top_h)))
