@@ -1,6 +1,6 @@
 """
 Purfling Roller — build123d CAD model
-Parts implemented: roller, axle, u_frame
+Parts implemented: roller, axle, washer (×2), u_frame
 """
 from build123d import *
 
@@ -11,24 +11,26 @@ from build123d import *
 
 # ── Parameters ─────────────────────────────────────────────────────────────
 roller_dia   = 25.0   # roller OD (mm)
-roller_len   = 40.0   # roller length (mm)
+roller_len   = 36.0   # roller length (mm) — shortened 4 mm to give washer clearance
 axle_dia     = 6.0    # steel axle rod diameter (mm)
-side_plate_t = 8.0    # side plate thickness in Y (along axle)
+side_plate_t = 8.0    # side plate thickness in Y (arm slides through this)
+washer_t     = 2.0    # thrust washer thickness in Y (between roller end and side plate)
+washer_od    = 12.0   # thrust washer outer diameter
 
-arm_y_w  = 6.5        # U-frame arm width in Y (fits in 8mm side-plate slot with clearance)
+arm_y_w  = 6.5        # U-frame arm width in Y (arm slides through side_plate_t slot, 0.75 mm clearance each side)
 arm_x_d  = 14.0       # U-frame arm depth in X (front-to-back) — 3.95mm wall each side of slot
 arm_h    = 26.5       # U-frame arm height in Z — 5mm clearance between crossbar top and roller bottom
 xbar_h   = 8.0        # U-frame crossbar height in Z (sits at the bottom of the inverted U)
 xbar_x_d = 25.0       # U-frame crossbar depth in X (wider middle section between arms)
 slot_w   = 6.1        # axle slot width in X (0.1mm clearance on 6mm axle)
 slot_d   = 12.0       # axle slot depth in Z (open at arm top, U-shape with semicircular cap)
-# Y-centre of each arm: sits mid-way through the side plate, just outside the roller
-arm_y       = roller_len / 2 + side_plate_t / 2   # = 24.0 mm
-arm_y_inner = arm_y - arm_y_w / 2                 # inner face of each arm in Y
+# Y-centre of each arm: washer fills gap between roller end and side plate inner face
+arm_y       = roller_len / 2 + washer_t + side_plate_t / 2   # = 18+2+4 = 24.0 mm
+arm_y_inner = arm_y - arm_y_w / 2                            # inner face of each arm in Y
 # Axle centre height in global Z — derived from slot geometry
-axle_z      = xbar_h + arm_h - (slot_d - slot_w / 2)  # = 25.55 mm
-# Axle total length: roller span + two side plates + 4 mm stub each side
-axle_len    = roller_len + 2 * side_plate_t + 8        # = 64.0 mm
+axle_z      = xbar_h + arm_h - (slot_d - slot_w / 2)         # = 25.55 mm
+# Axle total length: roller + 2 washers + 2 side plates + 4 mm stub each side
+axle_len    = roller_len + 2 * washer_t + 2 * side_plate_t + 8  # = 64.0 mm
 
 # ── Roller ──────────────────────────────────────────────────────────────────
 # Cylinder default axis is Z; rotate so axle lies along Y.
@@ -39,6 +41,16 @@ roller = (
 
 # ── Axle ────────────────────────────────────────────────────────────────────
 axle = Cylinder(radius=axle_dia / 2, height=axle_len, rotation=(90, 0, 0)).move(Location((0, 0, axle_z)))
+
+# ── Washers (thrust spacers between roller ends and side plate inner faces) ──
+washer_r = (
+    Cylinder(radius=washer_od / 2, height=washer_t, rotation=(90, 0, 0))
+    - Cylinder(radius=axle_dia / 2 + 0.2, height=washer_t + 2, rotation=(90, 0, 0))
+).move(Location((0, +(roller_len / 2 + washer_t / 2), axle_z)))
+washer_l = (
+    Cylinder(radius=washer_od / 2, height=washer_t, rotation=(90, 0, 0))
+    - Cylinder(radius=axle_dia / 2 + 0.2, height=washer_t + 2, rotation=(90, 0, 0))
+).move(Location((0, -(roller_len / 2 + washer_t / 2), axle_z)))
 
 # ── U-Frame (inverted: crossbar at bottom, arms extending up) ───────────────
 # Axle slot cutter — built in arm-local frame where Z=0 is the arm bottom (joins
