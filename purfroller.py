@@ -14,7 +14,7 @@ from build123d import *
 # X = front-to-back (rolling direction)
 
 # ── Parameters ─────────────────────────────────────────────────────────────
-roller_dia   = 25.0   # roller OD (mm)
+roller_dia   = 30.0   # roller OD (mm)
 roller_len   = 56.0   # roller length (mm) — 56mm gives 60mm crossbar span (arm_y=34mm)
 axle_dia     = 4.0    # steel axle rod diameter (mm)
 side_plate_t = 8.0    # side plate thickness in Y (arm slides through this)
@@ -83,13 +83,13 @@ xbar        = xbar_spine + xbar_boss
 u_frame = r_arm + l_arm + xbar
 
 # ── Outer frame parameters ───────────────────────────────────────────────────
-upper_axle_z  = axle_z + 5.0 + roller_dia             # = 54.55 mm (gap=0 at max U-frame push)
+upper_axle_z  = axle_z + 5.0 + roller_dia             # 5mm working gap between roller surfaces
 frame_x_d     = 22.0   # side plate width in X (arm slot 14.2 + ~4mm wall each side)
-frame_z_h     = 80.0   # top of frame in Z; plates run from xbar_h to frame_z_h
 arm_slot_x    = arm_x_d + 0.2                         # = 14.2 mm slot with clearance
 arm_slot_z    = 37.0   # slot height from plate base (xbar_h=8mm), reaches Z=45mm absolute
-xbar_top_h    = 12.0   # top crossbar height; sits above upper roller (roller top ~67mm)
+xbar_top_h    = 12.0   # top crossbar height
 xbar_bot_h    = 15.0   # lower outer crossbar height; M6 height-adjustment bolts thread through it
+frame_z_h     = upper_axle_z + roller_dia / 2 + 5.0 + xbar_top_h  # 5mm clearance above upper roller
 xbar_top_y    = 2 * (arm_y - side_plate_t / 2)        # = 40.0 mm inner-face to inner-face
 m6_dia        = 6.0    # M6 nominal thread diameter
 # M6 heat-set insert (single central hole in xbar_bot, pressed in from below)
