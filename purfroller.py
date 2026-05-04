@@ -15,7 +15,7 @@ from build123d import *
 
 # ── Parameters ─────────────────────────────────────────────────────────────
 roller_dia   = 25.0   # roller OD (mm)
-roller_len   = 36.0   # roller length (mm) — shortened 4 mm to give washer clearance
+roller_len   = 56.0   # roller length (mm) — 56mm gives 60mm crossbar span (arm_y=34mm)
 axle_dia     = 4.0    # steel axle rod diameter (mm)
 side_plate_t = 8.0    # side plate thickness in Y (arm slides through this)
 washer_t     = 2.0    # thrust washer thickness in Y (between roller end and side plate)
@@ -216,7 +216,7 @@ xbar_top = (
 # Two M6 heat-set inserts at Y=±xbar_top_y/6 (third-points of the inner span)
 # so the adjustment bolts give lateral stability to the U-frame.
 # 2 M3 bolts per end into heat-set inserts attach to side plates.
-m6_y_off = xbar_top_y / 6   # = 6.67mm — third-points between side plate inner faces
+m6_y_off = 15.0   # ±15mm from centre; 15mm gap to each side plate inner face (±30mm)
 
 def _make_m6_cutter(y_off):
     """Single M6 heat-set cutter at the given Y offset (new object each call — avoids move() aliasing)."""
