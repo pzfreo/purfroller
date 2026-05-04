@@ -28,3 +28,9 @@ for name in parts:
     path = f"parts/{name}.step"
     export_step(ns[name], path)
     print(f"exported {path}")
+
+# Assembly: all parts combined into a single STEP file
+from build123d import Compound
+assembly = Compound(children=[ns[name] for name in parts])
+export_step(assembly, "parts/assembly.step")
+print("exported parts/assembly.step")

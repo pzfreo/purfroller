@@ -23,7 +23,7 @@ washer_od    = 12.0   # thrust washer outer diameter
 
 arm_y_w  = 6.5        # U-frame arm width in Y (arm slides through side_plate_t slot, 0.75 mm clearance each side)
 arm_x_d  = 14.0       # U-frame arm depth in X (front-to-back) — 4.95mm wall each side of slot
-arm_h    = 26.5       # U-frame arm height in Z — ~4mm clearance between crossbar top and roller bottom
+arm_h    = 30.0       # U-frame arm height in Z — 5mm clearance between crossbar top and roller bottom
 xbar_h   = 8.0        # U-frame crossbar height in Z (sits at the bottom of the inverted U)
 xbar_x_d = 25.0       # U-frame crossbar depth in X (wider middle section between arms)
 slot_w   = 4.1        # axle slot width in X (0.1mm clearance on 4mm axle)
