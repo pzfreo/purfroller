@@ -27,6 +27,7 @@ output  = "{sliced_3mf}"
 docker  = true
 
 # ── Outer frame ───────────────────────────────────────────────────────────────
+# Side plates: stand upright — tall axis = Z, flange at base adds footprint
 [[parts]]
 file   = "parts/sp_r.step"
 orient = "upright"
@@ -35,54 +36,61 @@ orient = "upright"
 file   = "parts/sp_l.step"
 orient = "upright"
 
+# Crossbars: stand on end (Y→Z) — through-holes run bottom-to-top, no supports needed
 [[parts]]
 file   = "parts/xbar_top.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
 [[parts]]
 file   = "parts/xbar_bot.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
 # ── U-frame ───────────────────────────────────────────────────────────────────
+# Base on bed, arms pointing up — same orientation as assembly
 [[parts]]
 file   = "parts/u_frame.step"
 orient = "upright"
 
 # ── Rollers ───────────────────────────────────────────────────────────────────
+# Cylinders stand upright (Y-axis → Z)
 [[parts]]
 file   = "parts/upper_roller.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
 [[parts]]
 file   = "parts/roller.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
 # ── Thrust washers ────────────────────────────────────────────────────────────
+# Thin discs lie flat (Y-axis → Z, disc face horizontal)
 [[parts]]
 file   = "parts/washer_r.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
 [[parts]]
 file   = "parts/washer_l.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
 [[parts]]
 file   = "parts/upper_washer_r.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
 [[parts]]
 file   = "parts/upper_washer_l.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
 # ── Crank assembly ────────────────────────────────────────────────────────────
+# Crank arm is flat in XY plane — upright keeps it lying flat on bed
 [[parts]]
 file   = "parts/crank.step"
 orient = "upright"
 
+# Handle cylinder stands upright (Y-axis → Z)
 [[parts]]
 file   = "parts/handle.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
+# Retaining washer lies flat (Y-axis → Z)
 [[parts]]
 file   = "parts/ret_washer.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
