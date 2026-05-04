@@ -112,24 +112,25 @@ hs_chamfer    = 0.4    # 45° entry chamfer depth to locate insert
 bolt_x_off    = 6.0    # bolt X offset from centre (±); 2 bolts per crossbar end
 hs_total      = hs_insert_len + hs_clear_len  # 13 mm total hole depth
 
-def _hs_side_cutters(bolt_z_local, y_half):
-    """4 heat-set hole cutters (2 X positions × 2 Y faces) in a box's local frame.
-    Each hole: chamfered entry → 5mm insert pocket → 8mm clearance tail, all 4.7mm dia."""
+def _hs_through_cutters(bolt_z_local, y_half):
+    """2 through-bores for heat-set inserts (one per X offset), chamfered at both ends.
+    Open at both ends so crossbars print upright with no supports."""
     cuts = []
     for bx in [+bolt_x_off, -bolt_x_off]:
-        for yf in [+y_half, -y_half]:
-            sign = 1 if yf > 0 else -1
-            hole = Cylinder(
-                radius=hs_dia / 2, height=hs_total, rotation=(90, 0, 0)
-            ).move(Location((bx, yf - sign * hs_total / 2, bolt_z_local)))
-            # Cone: with rotation=(90,0,0), top_radius is at +Y, bottom_radius at -Y
-            top_r = hs_dia / 2 + hs_chamfer if yf > 0 else hs_dia / 2
-            bot_r = hs_dia / 2 if yf > 0 else hs_dia / 2 + hs_chamfer
-            chf = Cone(
-                bottom_radius=bot_r, top_radius=top_r, height=hs_chamfer,
-                rotation=(90, 0, 0)
-            ).move(Location((bx, yf - sign * hs_chamfer / 2, bolt_z_local)))
-            cuts.append(hole + chf)
+        bore = Cylinder(
+            radius=hs_dia / 2, height=2 * y_half + 2, rotation=(90, 0, 0)
+        ).move(Location((bx, 0, bolt_z_local)))
+        # +Y face chamfer: top_radius (at +Y) is wide, bottom_radius (at -Y) is narrow
+        chf_p = Cone(
+            bottom_radius=hs_dia / 2, top_radius=hs_dia / 2 + hs_chamfer,
+            height=hs_chamfer, rotation=(90, 0, 0)
+        ).move(Location((bx, y_half - hs_chamfer / 2, bolt_z_local)))
+        # -Y face chamfer: bottom_radius (at -Y) is wide, top_radius (at +Y) is narrow
+        chf_n = Cone(
+            bottom_radius=hs_dia / 2 + hs_chamfer, top_radius=hs_dia / 2,
+            height=hs_chamfer, rotation=(90, 0, 0)
+        ).move(Location((bx, -y_half + hs_chamfer / 2, bolt_z_local)))
+        cuts.append(bore + chf_p + chf_n)
     result = cuts[0]
     for c in cuts[1:]:
         result = result + c
@@ -208,7 +209,7 @@ sp_l = (
 # Upper axle retained by side plate holes. 2 M3 bolts per end into heat-set inserts.
 xbar_top = (
     Box(frame_x_d, xbar_top_y, xbar_top_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    - _hs_side_cutters(xbar_top_h / 2, xbar_top_y / 2)
+    - _hs_through_cutters(xbar_top_h / 2, xbar_top_y / 2)
 ).move(Location((0, 0, frame_z_h - xbar_top_h)))
 
 # ── Lower crossbar ────────────────────────────────────────────────────────────
@@ -231,7 +232,7 @@ _m6_hs_cutter = (
 xbar_bot = (
     Box(frame_x_d, xbar_top_y, xbar_bot_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
     - _m6_hs_cutter
-    - _hs_side_cutters(xbar_bot_h / 2, xbar_top_y / 2)
+    - _hs_through_cutters(xbar_bot_h / 2, xbar_top_y / 2)
 ).move(Location((0, 0, -xbar_bot_h)))
 
 # ── Crank parameters ─────────────────────────────────────────────────────────
