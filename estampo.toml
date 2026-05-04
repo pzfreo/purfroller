@@ -27,14 +27,14 @@ output  = "{sliced_3mf}"
 docker  = true
 
 # ── Outer frame ───────────────────────────────────────────────────────────────
-# Side plates: stand upright — tall axis = Z, flange at base adds footprint
+# Side plates: lie flat on large face (Y→Z), flange rises upward, all holes vertical
 [[parts]]
 file   = "parts/sp_r.step"
-orient = "upright"
+rotate = [90.0, 0.0, 0.0]
 
 [[parts]]
 file   = "parts/sp_l.step"
-orient = "upright"
+rotate = [-90.0, 0.0, 0.0]
 
 # Crossbars: stand on end (Y→Z) — through-holes run bottom-to-top, no supports needed
 [[parts]]
