@@ -217,25 +217,22 @@ xbar_top = (
 # so the adjustment bolts give lateral stability to the U-frame.
 # 2 M3 bolts per end into heat-set inserts attach to side plates.
 m6_y_off = xbar_top_y / 6   # = 6.67mm — third-points between side plate inner faces
-_m6_hs_cutter = (
-    Cone(
-        bottom_radius=m6_hs_dia / 2 + m6_hs_chamfer,
-        top_radius=m6_hs_dia / 2,
-        height=m6_hs_chamfer,
-        align=(Align.CENTER, Align.CENTER, Align.MIN),
-    )
-    + Cylinder(radius=m6_hs_dia / 2, height=m6_hs_len + 1,
-               align=(Align.CENTER, Align.CENTER, Align.MIN))
-    + Cylinder(radius=m6_clr_dia / 2, height=(xbar_bot_h - m6_hs_len) + 2,
-               align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, m6_hs_len)))
-)
-_m6_cutters = (
-    _m6_hs_cutter.move(Location((0, +m6_y_off, 0)))
-    + _m6_hs_cutter.move(Location((0, -m6_y_off, 0)))
-)
+
+def _make_m6_cutter(y_off):
+    """Single M6 heat-set cutter at the given Y offset (new object each call — avoids move() aliasing)."""
+    return (
+        Cone(bottom_radius=m6_hs_dia / 2 + m6_hs_chamfer, top_radius=m6_hs_dia / 2,
+             height=m6_hs_chamfer, align=(Align.CENTER, Align.CENTER, Align.MIN))
+        + Cylinder(radius=m6_hs_dia / 2, height=m6_hs_len + 1,
+                   align=(Align.CENTER, Align.CENTER, Align.MIN))
+        + Cylinder(radius=m6_clr_dia / 2, height=(xbar_bot_h - m6_hs_len) + 2,
+                   align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, m6_hs_len)))
+    ).move(Location((0, y_off, 0)))
+
 xbar_bot = (
     Box(frame_x_d, xbar_top_y, xbar_bot_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    - _m6_cutters
+    - _make_m6_cutter(+m6_y_off)
+    - _make_m6_cutter(-m6_y_off)
     - _hs_through_cutters(xbar_bot_h / 2, xbar_top_y / 2)
 ).move(Location((0, 0, -xbar_bot_h)))
 
