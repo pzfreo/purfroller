@@ -76,10 +76,9 @@ l_arm = (Box(arm_x_d, arm_y_w, arm_h, align=(Align.CENTER, Align.CENTER, Align.M
 # between the arms (where the M6 adjustment bolts press up from below),
 # narrowing to arm_x_d directly under each arm so the arms can slip-fit into
 # the side plate slots.
-xbar_mid    = Box(xbar_x_d, 2 * (arm_y - side_plate_t / 2 - 0.5), xbar_h, align=(Align.CENTER, Align.CENTER, Align.MIN))  # 39mm Y — 0.5mm clearance inside each side plate
-xbar_end_r  = Box(arm_x_d, arm_y_w, xbar_h, align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0,  arm_y, 0)))
-xbar_end_l  = Box(arm_x_d, arm_y_w, xbar_h, align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, -arm_y, 0)))
-xbar        = xbar_mid + xbar_end_r + xbar_end_l
+xbar_spine  = Box(arm_x_d, 2 * arm_y + arm_y_w, xbar_h, align=(Align.CENTER, Align.CENTER, Align.MIN))  # narrow spine spanning full Y, connects arms to mid boss
+xbar_boss   = Box(xbar_x_d, 2 * (arm_y - side_plate_t / 2 - 0.5), xbar_h, align=(Align.CENTER, Align.CENTER, Align.MIN))  # wide boss in mid gap, 0.5mm clearance inside each side plate
+xbar        = xbar_spine + xbar_boss
 
 u_frame = r_arm + l_arm + xbar
 
@@ -212,11 +211,12 @@ xbar_top = (
     - _hs_through_cutters(xbar_top_h / 2, xbar_top_y / 2)
 ).move(Location((0, 0, frame_z_h - xbar_top_h)))
 
-# ── Lower crossbar ────────────────────────────────────────────────────────────
+# ── Lower crossbar ───────────────────────────────────────────────────────────
 # Sits below the U-frame crossbar (Z=-xbar_bot_h to Z=0).
-# Single central M6 heat-set insert (pressed in from bottom face) for the
-# height-adjustment bolt that pushes up on the U-frame crossbar from below.
+# Two M6 heat-set inserts at Y=±xbar_top_y/6 (third-points of the inner span)
+# so the adjustment bolts give lateral stability to the U-frame.
 # 2 M3 bolts per end into heat-set inserts attach to side plates.
+m6_y_off = xbar_top_y / 6   # = 6.67mm — third-points between side plate inner faces
 _m6_hs_cutter = (
     Cone(
         bottom_radius=m6_hs_dia / 2 + m6_hs_chamfer,
@@ -229,9 +229,13 @@ _m6_hs_cutter = (
     + Cylinder(radius=m6_clr_dia / 2, height=(xbar_bot_h - m6_hs_len) + 2,
                align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, m6_hs_len)))
 )
+_m6_cutters = (
+    _m6_hs_cutter.move(Location((0, +m6_y_off, 0)))
+    + _m6_hs_cutter.move(Location((0, -m6_y_off, 0)))
+)
 xbar_bot = (
     Box(frame_x_d, xbar_top_y, xbar_bot_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    - _m6_hs_cutter
+    - _m6_cutters
     - _hs_through_cutters(xbar_bot_h / 2, xbar_top_y / 2)
 ).move(Location((0, 0, -xbar_bot_h)))
 
@@ -241,7 +245,7 @@ hub_len         = 15.0   # hub length along Y (sits on axle stub outside right p
 crank_arm_len   = 40.0   # axle centre to handle bore centre (mm)
 crank_arm_h     = 10.0   # arm height in Z
 post_od         = 10.0   # handle post OD
-post_len        = 8.3    # handle post length in arm bore
+post_len        = hub_len + 0.5  # 0.5mm protrusion past inner crank face gives running clearance for rotation
 post_bore_dia   = 10.4   # arm bore for post (0.4mm clearance)
 post_flange_od  = 14.0
 post_flange_h   = 2.0
@@ -298,9 +302,8 @@ _handle_body = Cylinder(radius=handle_od / 2, height=handle_len,
                         rotation=(90, 0, 0)
                        ).move(Location((crank_arm_len, handle_body_y_c, upper_axle_z)))
 _post_insert = Cylinder(radius=hs_dia / 2, height=hs_insert_len + 1,
-                        rotation=(90, 0, 0),
-                        align=(Align.CENTER, Align.CENTER, Align.MIN)
-                       ).move(Location((crank_arm_len, post_tip_y, upper_axle_z)))
+                        rotation=(90, 0, 0)
+                       ).move(Location((crank_arm_len, post_tip_y + (hs_insert_len + 1) / 2, upper_axle_z)))
 handle = _handle_body + _handle_post + _handle_flng - _post_insert
 
 # ── Retaining washer ─────────────────────────────────────────────────────────
@@ -308,4 +311,4 @@ handle = _handle_body + _handle_post + _handle_flng - _post_insert
 ret_washer = (
     Cylinder(radius=ret_washer_od / 2, height=ret_washer_h, rotation=(90, 0, 0))
     - Cylinder(radius=m3_clr_dia / 2, height=ret_washer_h + 2, rotation=(90, 0, 0))
-).move(Location((crank_arm_len, hub_y_inner - ret_washer_h / 2, upper_axle_z)))
+).move(Location((crank_arm_len, post_tip_y - ret_washer_h / 2, upper_axle_z)))
