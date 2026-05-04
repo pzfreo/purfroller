@@ -155,7 +155,9 @@ upper_roller = (
     - Cylinder(radius=axle_dia / 2, height=roller_len + 2, rotation=(90, 0, 0))
 ).move(Location((0, 0, upper_axle_z)))
 
-upper_axle = Cylinder(radius=axle_dia / 2, height=axle_len, rotation=(90, 0, 0)).move(Location((0, 0, upper_axle_z)))
+upper_axle_stub = 15.0   # stub beyond each side plate for crank attachment (was 4mm)
+upper_axle_len  = roller_len + 2 * washer_t + 2 * side_plate_t + 2 * upper_axle_stub  # = 86mm
+upper_axle = Cylinder(radius=axle_dia / 2, height=upper_axle_len, rotation=(90, 0, 0)).move(Location((0, 0, upper_axle_z)))
 
 upper_washer_r = (
     Cylinder(radius=washer_od / 2, height=washer_t, rotation=(90, 0, 0))
@@ -231,3 +233,78 @@ xbar_bot = (
     - _m6_hs_cutter
     - _hs_side_cutters(xbar_bot_h / 2, xbar_top_y / 2)
 ).move(Location((0, 0, -xbar_bot_h)))
+
+# ── Crank parameters ─────────────────────────────────────────────────────────
+hub_od          = 16.0   # crank hub OD
+hub_len         = 15.0   # hub length along Y (sits on axle stub outside right plate)
+crank_arm_len   = 40.0   # axle centre to handle bore centre (mm)
+crank_arm_h     = 10.0   # arm height in Z
+post_od         = 10.0   # handle post OD
+post_len        = 8.3    # handle post length in arm bore
+post_bore_dia   = 10.4   # arm bore for post (0.4mm clearance)
+post_flange_od  = 14.0
+post_flange_h   = 2.0
+handle_od       = 16.0
+handle_len      = 30.0
+ret_washer_od   = 14.0
+ret_washer_h    = 4.0
+
+# Key Y positions — crank on right (+Y) side
+hub_y_inner = arm_y + side_plate_t / 2           # = 28mm (plate outer face)
+hub_y_c     = hub_y_inner + hub_len / 2          # = 35.5mm (hub centre)
+arm_y_outer = hub_y_inner + hub_len              # = 43mm (arm outer face)
+post_tip_y        = arm_y_outer - post_len             # = 34.7mm (inner end of post)
+handle_body_y_c   = arm_y_outer + post_flange_h + handle_len / 2  # = 60mm
+
+# ── Crank (hub + arm, one printed piece) ─────────────────────────────────────
+# Two circular bosses (hub and handle end) joined by rectangular arm.
+# Hub clamped to axle by M3 bolt into radial heat-set insert on hub top.
+_hub_boss    = Cylinder(radius=hub_od / 2, height=hub_len,
+                        rotation=(90, 0, 0)).move(Location((0, hub_y_c, upper_axle_z)))
+_handle_boss = Cylinder(radius=hub_od / 2, height=hub_len,
+                        rotation=(90, 0, 0)).move(Location((crank_arm_len, hub_y_c, upper_axle_z)))
+_arm_box     = Box(crank_arm_len, hub_len, crank_arm_h,
+                   align=(Align.MIN, Align.CENTER, Align.CENTER)
+                  ).move(Location((0, hub_y_c, upper_axle_z)))
+_axle_bore   = Cylinder(radius=axle_dia / 2, height=hub_len + 2,
+                        rotation=(90, 0, 0)).move(Location((0, hub_y_c, upper_axle_z)))
+_hub_top_z   = upper_axle_z + hub_od / 2
+_hub_insert  = (
+    Cone(bottom_radius=hs_dia / 2, top_radius=hs_dia / 2 + hs_chamfer,
+         height=hs_chamfer, align=(Align.CENTER, Align.CENTER, Align.MAX))
+    + Cylinder(radius=hs_dia / 2, height=hs_insert_len + 1,
+               align=(Align.CENTER, Align.CENTER, Align.MAX))
+    + Cylinder(radius=m3_clr_dia / 2,
+               height=(hub_od / 2 - axle_dia / 2 - hs_insert_len) + 2,
+               align=(Align.CENTER, Align.CENTER, Align.MAX)
+              ).move(Location((0, 0, -hs_insert_len)))
+).move(Location((0, hub_y_c, _hub_top_z)))
+_post_bore   = Cylinder(radius=post_bore_dia / 2, height=hub_len + 2,
+                        rotation=(90, 0, 0)).move(Location((crank_arm_len, hub_y_c, upper_axle_z)))
+crank = _hub_boss + _handle_boss + _arm_box - _axle_bore - _hub_insert - _post_bore
+
+# ── Handle (separate spinning piece, same pattern as peg-turner) ─────────────
+# post → inside arm bore (Y=post_tip_y to arm_y_outer)
+# flange → sits on arm outer face (Y=arm_y_outer to arm_y_outer+post_flange_h)
+# body → outward grip beyond flange
+_handle_post = Cylinder(radius=post_od / 2, height=post_len,
+                        rotation=(90, 0, 0)
+                       ).move(Location((crank_arm_len, post_tip_y + post_len / 2, upper_axle_z)))
+_handle_flng = Cylinder(radius=post_flange_od / 2, height=post_flange_h,
+                        rotation=(90, 0, 0)
+                       ).move(Location((crank_arm_len, arm_y_outer + post_flange_h / 2, upper_axle_z)))
+_handle_body = Cylinder(radius=handle_od / 2, height=handle_len,
+                        rotation=(90, 0, 0)
+                       ).move(Location((crank_arm_len, handle_body_y_c, upper_axle_z)))
+_post_insert = Cylinder(radius=hs_dia / 2, height=hs_insert_len + 1,
+                        rotation=(90, 0, 0),
+                        align=(Align.CENTER, Align.CENTER, Align.MIN)
+                       ).move(Location((crank_arm_len, post_tip_y, upper_axle_z)))
+handle = _handle_body + _handle_post + _handle_flng - _post_insert
+
+# ── Retaining washer ─────────────────────────────────────────────────────────
+# Sits against arm inner face (Y=hub_y_inner=28mm), held by M3 bolt into post insert.
+ret_washer = (
+    Cylinder(radius=ret_washer_od / 2, height=ret_washer_h, rotation=(90, 0, 0))
+    - Cylinder(radius=m3_clr_dia / 2, height=ret_washer_h + 2, rotation=(90, 0, 0))
+).move(Location((crank_arm_len, hub_y_inner - ret_washer_h / 2, upper_axle_z)))
