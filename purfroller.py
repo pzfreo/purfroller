@@ -240,7 +240,7 @@ hub_len         = 15.0   # hub length along Y (sits on axle stub outside right p
 crank_arm_len   = 40.0   # axle centre to handle bore centre (mm)
 crank_arm_h     = 10.0   # arm height in Z
 post_od         = 10.0   # handle post OD
-post_len        = hub_len  # post spans full bore depth; tip flush with crank inner face
+post_len        = hub_len + 0.5  # 0.5mm protrusion past inner crank face gives running clearance for rotation
 post_bore_dia   = 10.4   # arm bore for post (0.4mm clearance)
 post_flange_od  = 14.0
 post_flange_h   = 2.0
@@ -306,4 +306,4 @@ handle = _handle_body + _handle_post + _handle_flng - _post_insert
 ret_washer = (
     Cylinder(radius=ret_washer_od / 2, height=ret_washer_h, rotation=(90, 0, 0))
     - Cylinder(radius=m3_clr_dia / 2, height=ret_washer_h + 2, rotation=(90, 0, 0))
-).move(Location((crank_arm_len, hub_y_inner - ret_washer_h / 2, upper_axle_z)))
+).move(Location((crank_arm_len, post_tip_y - ret_washer_h / 2, upper_axle_z)))
