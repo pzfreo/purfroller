@@ -211,11 +211,12 @@ xbar_top = (
     - _hs_through_cutters(xbar_top_h / 2, xbar_top_y / 2)
 ).move(Location((0, 0, frame_z_h - xbar_top_h)))
 
-# ── Lower crossbar ────────────────────────────────────────────────────────────
+# ── Lower crossbar ───────────────────────────────────────────────────────────
 # Sits below the U-frame crossbar (Z=-xbar_bot_h to Z=0).
-# Single central M6 heat-set insert (pressed in from bottom face) for the
-# height-adjustment bolt that pushes up on the U-frame crossbar from below.
+# Two M6 heat-set inserts at Y=±xbar_top_y/6 (third-points of the inner span)
+# so the adjustment bolts give lateral stability to the U-frame.
 # 2 M3 bolts per end into heat-set inserts attach to side plates.
+m6_y_off = xbar_top_y / 6   # = 6.67mm — third-points between side plate inner faces
 _m6_hs_cutter = (
     Cone(
         bottom_radius=m6_hs_dia / 2 + m6_hs_chamfer,
@@ -228,9 +229,13 @@ _m6_hs_cutter = (
     + Cylinder(radius=m6_clr_dia / 2, height=(xbar_bot_h - m6_hs_len) + 2,
                align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, m6_hs_len)))
 )
+_m6_cutters = (
+    _m6_hs_cutter.move(Location((0, +m6_y_off, 0)))
+    + _m6_hs_cutter.move(Location((0, -m6_y_off, 0)))
+)
 xbar_bot = (
     Box(frame_x_d, xbar_top_y, xbar_bot_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    - _m6_hs_cutter
+    - _m6_cutters
     - _hs_through_cutters(xbar_bot_h / 2, xbar_top_y / 2)
 ).move(Location((0, 0, -xbar_bot_h)))
 
