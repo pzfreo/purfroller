@@ -3,7 +3,8 @@ Purfling Roller — build123d CAD model
 Parts implemented: roller, axle, washer (×2), u_frame,
                    upper_roller, upper_axle, upper_washer (×2),
                    sp_r, sp_l (side plates), xbar_top (top crossbar),
-                   xbar_bot (lower crossbar with M6 height-adjustment holes)
+                   xbar_bot (lower crossbar with M6 height-adjustment holes),
+                   M3 heat-set inserts + bolts attaching crossbars to side plates
 """
 from build123d import *
 
@@ -91,8 +92,62 @@ arm_slot_z    = 37.0   # slot height from plate base (xbar_h=8mm), reaches Z=45m
 xbar_top_h    = 12.0   # top crossbar height; sits above upper roller (roller top ~67mm)
 xbar_bot_h    = 15.0   # lower outer crossbar height; M6 height-adjustment bolts thread through it
 xbar_top_y    = 2 * (arm_y - side_plate_t / 2)        # = 40.0 mm inner-face to inner-face
-m6_dia        = 6.0    # M6 tapped hole diameter for height-adjustment bolts
-m6_x          = 8.0    # M6 bolt X offset from centre (±)
+m6_dia        = 6.0    # M6 nominal thread diameter
+# M6 heat-set insert (single central hole in xbar_bot, pressed in from below)
+m6_hs_od      = 8.0    # insert OD
+m6_hs_len     = 10.0   # insert length
+m6_hs_dia     = 7.7    # hole dia (0.3mm under OD)
+m6_clr_dia    = 6.2    # clearance hole above insert for bolt tip
+m6_hs_chamfer = 0.4    # entry chamfer depth
+plate_ext     = 30.0   # extra plate length below xbar_bot for bolt access
+flange_y      = 40.0   # clamping flange outward width in Y (for G-clamps)
+flange_z      = 10.0   # clamping flange thickness in Z
+
+# ── Heat-set insert / M3 bolt parameters ─────────────────────────────────────
+hs_insert_len = 5.0    # heat set insert length (mm) — 5mm OD brass M3 insert
+hs_clear_len  = 8.0    # clearance behind insert for bolt tip
+hs_dia        = 4.7    # hole dia (0.3mm under 5mm OD — grips on melt-in)
+m3_clr_dia    = 3.3    # M3 clearance hole through side plate
+hs_chamfer    = 0.4    # 45° entry chamfer depth to locate insert
+bolt_x_off    = 6.0    # bolt X offset from centre (±); 2 bolts per crossbar end
+hs_total      = hs_insert_len + hs_clear_len  # 13 mm total hole depth
+
+def _hs_side_cutters(bolt_z_local, y_half):
+    """4 heat-set hole cutters (2 X positions × 2 Y faces) in a box's local frame.
+    Each hole: chamfered entry → 5mm insert pocket → 8mm clearance tail, all 4.7mm dia."""
+    cuts = []
+    for bx in [+bolt_x_off, -bolt_x_off]:
+        for yf in [+y_half, -y_half]:
+            sign = 1 if yf > 0 else -1
+            hole = Cylinder(
+                radius=hs_dia / 2, height=hs_total, rotation=(90, 0, 0)
+            ).move(Location((bx, yf - sign * hs_total / 2, bolt_z_local)))
+            # Cone: with rotation=(90,0,0), top_radius is at +Y, bottom_radius at -Y
+            top_r = hs_dia / 2 + hs_chamfer if yf > 0 else hs_dia / 2
+            bot_r = hs_dia / 2 if yf > 0 else hs_dia / 2 + hs_chamfer
+            chf = Cone(
+                bottom_radius=bot_r, top_radius=top_r, height=hs_chamfer,
+                rotation=(90, 0, 0)
+            ).move(Location((bx, yf - sign * hs_chamfer / 2, bolt_z_local)))
+            cuts.append(hole + chf)
+    result = cuts[0]
+    for c in cuts[1:]:
+        result = result + c
+    return result
+
+def _m3_plate_cutters(bolt_zs_local):
+    """M3 clearance holes through a side plate at given plate-local Z positions."""
+    cuts = []
+    for bx in [+bolt_x_off, -bolt_x_off]:
+        for bz in bolt_zs_local:
+            cuts.append(
+                Cylinder(radius=m3_clr_dia / 2, height=side_plate_t + 2, rotation=(90, 0, 0))
+                .move(Location((bx, 0, bz)))
+            )
+    result = cuts[0]
+    for c in cuts[1:]:
+        result = result + c
+    return result
 
 # ── Upper roller, axle and washers ───────────────────────────────────────────
 upper_roller = (
@@ -112,35 +167,67 @@ upper_washer_l = (
 ).move(Location((0, -(roller_len / 2 + washer_t / 2), upper_axle_z)))
 
 # ── Side plates ──────────────────────────────────────────────────────────────
-# Plates run from Z=-xbar_bot_h to Z=frame_z_h, enclosing the full U-frame range.
-# Arm slot runs world Z=0–45 (covers xbar_end at Z=0–8 plus full arm travel to Z=45).
-# Upper axle hole and M3 bolt holes (later) in plate-local Z coords.
-_plate_h       = frame_z_h + xbar_bot_h                      # = 95.0 mm
-_plate_z       = -xbar_bot_h                                  # world Z of plate base = -15
+# Plates run from Z=-(xbar_bot_h+plate_ext) to Z=frame_z_h.
+# Extra 30mm below xbar_bot gives open access space for the M6 height-adjust bolt.
+_plate_h       = frame_z_h + xbar_bot_h + plate_ext           # = 125.0 mm
+_plate_z       = -(xbar_bot_h + plate_ext)                    # world Z of plate base = -45
 _arm_slot_h    = arm_slot_z + xbar_h                         # = 45.0 mm (world Z=0 to 45)
-_axle_hole_z   = upper_axle_z + xbar_bot_h                   # = 69.55 mm in plate-local Z
+_arm_slot_z    = xbar_bot_h + plate_ext                       # plate-local Z where slot starts = 45
+_axle_hole_z   = upper_axle_z + xbar_bot_h + plate_ext        # = 99.55 mm plate-local
+# M3 clearance holes at crossbar mid-heights (plate-local Z)
+_sp_xbar_top_z = frame_z_h - xbar_top_h / 2 + xbar_bot_h + plate_ext   # = 119.0 mm plate-local
+_sp_xbar_bot_z = xbar_bot_h / 2 + plate_ext                  # = 37.5 mm plate-local
+_m3_cuts = _m3_plate_cutters([_sp_xbar_top_z, _sp_xbar_bot_z])
+# G-clamp flanges in plate-local frame (Z=0 = plate base = world Z=-45).
+# Each flange extends outward 40mm from the outer plate face at the bottom.
+_flange_r = Box(frame_x_d, flange_y, flange_z,
+                align=(Align.CENTER, Align.MIN, Align.MIN)
+               ).move(Location((0, side_plate_t / 2, 0)))
+_flange_l = Box(frame_x_d, flange_y, flange_z,
+                align=(Align.CENTER, Align.MAX, Align.MIN)
+               ).move(Location((0, -side_plate_t / 2, 0)))
 sp_r = (
     Box(frame_x_d, side_plate_t, _plate_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    - Box(arm_slot_x, side_plate_t + 2, _arm_slot_h, align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, xbar_bot_h)))
+    + _flange_r
+    - Box(arm_slot_x, side_plate_t + 2, _arm_slot_h, align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, _arm_slot_z)))
     - Cylinder(radius=(axle_dia + 0.2) / 2, height=side_plate_t + 2, rotation=(90, 0, 0)).move(Location((0, 0, _axle_hole_z)))
+    - _m3_cuts
 ).move(Location((0, +arm_y, _plate_z)))
 sp_l = (
     Box(frame_x_d, side_plate_t, _plate_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    - Box(arm_slot_x, side_plate_t + 2, _arm_slot_h, align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, xbar_bot_h)))
+    + _flange_l
+    - Box(arm_slot_x, side_plate_t + 2, _arm_slot_h, align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, _arm_slot_z)))
     - Cylinder(radius=(axle_dia + 0.2) / 2, height=side_plate_t + 2, rotation=(90, 0, 0)).move(Location((0, 0, _axle_hole_z)))
+    - _m3_cuts
 ).move(Location((0, -arm_y, _plate_z)))
 
 # ── Top crossbar ─────────────────────────────────────────────────────────────
 # Structural tie between side plates above the upper roller (roller top ~67mm).
-# Upper axle is held by side plate holes alone. M3 inserts added later.
-xbar_top = Box(frame_x_d, xbar_top_y, xbar_top_h, align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, frame_z_h - xbar_top_h)))
+# Upper axle retained by side plate holes. 2 M3 bolts per end into heat-set inserts.
+xbar_top = (
+    Box(frame_x_d, xbar_top_y, xbar_top_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    - _hs_side_cutters(xbar_top_h / 2, xbar_top_y / 2)
+).move(Location((0, 0, frame_z_h - xbar_top_h)))
 
 # ── Lower crossbar ────────────────────────────────────────────────────────────
-# Sits below the U-frame crossbar (Z=-xbar_bot_h to Z=0). Two M6 tapped holes
-# for height-adjustment bolts that push up on the U-frame crossbar from below.
-# M3 bolt holes for attachment to side plates added later.
+# Sits below the U-frame crossbar (Z=-xbar_bot_h to Z=0).
+# Single central M6 heat-set insert (pressed in from bottom face) for the
+# height-adjustment bolt that pushes up on the U-frame crossbar from below.
+# 2 M3 bolts per end into heat-set inserts attach to side plates.
+_m6_hs_cutter = (
+    Cone(
+        bottom_radius=m6_hs_dia / 2 + m6_hs_chamfer,
+        top_radius=m6_hs_dia / 2,
+        height=m6_hs_chamfer,
+        align=(Align.CENTER, Align.CENTER, Align.MIN),
+    )
+    + Cylinder(radius=m6_hs_dia / 2, height=m6_hs_len + 1,
+               align=(Align.CENTER, Align.CENTER, Align.MIN))
+    + Cylinder(radius=m6_clr_dia / 2, height=(xbar_bot_h - m6_hs_len) + 2,
+               align=(Align.CENTER, Align.CENTER, Align.MIN)).move(Location((0, 0, m6_hs_len)))
+)
 xbar_bot = (
     Box(frame_x_d, xbar_top_y, xbar_bot_h, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    - Cylinder(radius=m6_dia / 2, height=xbar_bot_h + 2).move(Location((+m6_x, 0, xbar_bot_h / 2)))
-    - Cylinder(radius=m6_dia / 2, height=xbar_bot_h + 2).move(Location((-m6_x, 0, xbar_bot_h / 2)))
+    - _m6_hs_cutter
+    - _hs_side_cutters(xbar_bot_h / 2, xbar_top_y / 2)
 ).move(Location((0, 0, -xbar_bot_h)))
